@@ -29,7 +29,7 @@ public class VacateParkingSpotUseCase {
         final Duration duration = Duration.between(parkedShip.getParkingStartedAt(), currentTime);
 
         if (duration.toMinutes() > 1 && duration.toMinutes() < 180) {
-            // pay hourly rate starting from a minute until 3 hours (180 minutes)
+            // pay hourly rate starting from a minute until 180 minutes (3 hours)
             calculateHourlyRate(duration, parkedShip);
         } else if (duration.toHours() > 3) {
             // pay daily rate starting from 3 hours

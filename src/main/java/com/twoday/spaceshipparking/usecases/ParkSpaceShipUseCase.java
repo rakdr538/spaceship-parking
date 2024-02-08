@@ -1,19 +1,23 @@
 package com.twoday.spaceshipparking.usecases;
 
-import com.twoday.spaceshipparking.dto.mappers.ParkingRequestToParkingMapper;
-import com.twoday.spaceshipparking.service.ParkingService;
 import com.twoday.spaceshipparking.dao.Parking;
 import com.twoday.spaceshipparking.dto.CreateParkingRequestDTO;
+import com.twoday.spaceshipparking.dto.mappers.ParkingRequestToParkingMapper;
 import com.twoday.spaceshipparking.exceptions.ParkingProhibitedException;
+import com.twoday.spaceshipparking.service.ParkingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
+
+@Validated
 @Component
 @RequiredArgsConstructor
 public class ParkSpaceShipUseCase {
     private final ParkingService parkingService;
 
-    public Parking doPark(CreateParkingRequestDTO parkingRequest) {
+    public Parking doPark(@Valid CreateParkingRequestDTO parkingRequest) {
         parkingService
                 .getAllOccupiedSpots()
                 .forEach(parked -> isDoubleParking(parkingRequest, parked));

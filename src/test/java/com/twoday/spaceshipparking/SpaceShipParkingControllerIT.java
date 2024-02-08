@@ -14,16 +14,16 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.*;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -76,13 +76,13 @@ class SpaceShipParkingControllerIT {
 
         @Test
         void whenInValidCreateReq1_thenBadReqResponse () throws Exception {
-            final CreateParkingRequestDTO badRequestDTO1 = CreateParkingRequestDTO.builder()
+            final CreateParkingRequestDTO badRequestDTO = CreateParkingRequestDTO.builder()
                     .parkingPlace(ParkingPlace.builder().floor(-1).plot(25).build())
                     .spaceShip(SpaceShip.builder().name(null).registrationNumber(null).build())
                     .spaceShipUser(SpaceShipUser.builder().user_id(null).build())
                     .build();
 
-            HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(badRequestDTO1), headers);
+            HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(badRequestDTO), headers);
             ResponseEntity<Parking> response = restTemplate.exchange(
                     createURLWithPort(), HttpMethod.POST, entity, Parking.class);
             assertTrue(response.getStatusCode().is4xxClientError(), "Should be 400, bad req");
@@ -93,13 +93,16 @@ class SpaceShipParkingControllerIT {
 
         @Test
         void whenInValidCreateReq2_thenBadReqResponse () throws Exception {
-            final CreateParkingRequestDTO badRequestDTO1 = CreateParkingRequestDTO.builder()
+            final CreateParkingRequestDTO badRequestDTO = CreateParkingRequestDTO.builder()
                     .parkingPlace(ParkingPlace.builder().floor(2).plot(14).build())
                     .spaceShip(SpaceShip.builder().name(null).registrationNumber("@mine_own").build())
                     .spaceShipUser(SpaceShipUser.builder().user_id("star-lord").build())
                     .build();
 
-            HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(badRequestDTO1), headers);
+            final String st1 = objectMapper.writeValueAsString(badRequestDTO);
+            System.out.println(st1);
+
+            HttpEntity<String> entity = new HttpEntity<>(st1, headers);
             ResponseEntity<Parking> response = restTemplate.exchange(
                     createURLWithPort(), HttpMethod.POST, entity, Parking.class);
             assertTrue(response.getStatusCode().is4xxClientError(), "Should be 400, bad req");
@@ -112,7 +115,7 @@ class SpaceShipParkingControllerIT {
         @CsvSource({"-2,16", "4,14", "0,0"})
         void whenValidCreateReq_thenBadReqResponse (Integer floor, Integer plot) throws Exception {
             // boundary value testing
-            HttpEntity<String> entity = new HttpEntity<>(getReq(floor, plot), headers);
+            HttpEntity<String> entity = new HttpEntity<>(getReq(floor, plot, "CSX 123"), headers);
             ResponseEntity<Parking> response = restTemplate.exchange(
                     createURLWithPort(), HttpMethod.POST, entity, Parking.class);
             assertTrue(response.getStatusCode().is4xxClientError(), "Should be 400, bad req");
@@ -154,7 +157,7 @@ class SpaceShipParkingControllerIT {
     class UseCaseTests {
         @Test
         void givenValidCreateReq_thenCreateNewParkingAndDoGet () throws JsonProcessingException {
-            HttpEntity<String> entity = new HttpEntity<>(getReq(2,5), headers);
+            HttpEntity<String> entity = new HttpEntity<>(getReq(2,5, "CSX 123"), headers);
             ResponseEntity<Parking> response = restTemplate.exchange(
                     createURLWithPort(), HttpMethod.POST, entity, Parking.class);
             assertTrue(response.getStatusCode().is2xxSuccessful(), "Should be 201");
@@ -182,10 +185,10 @@ class SpaceShipParkingControllerIT {
         }
     }
 
-    private String getReq(int floor, int plot) throws JsonProcessingException {
+    private String getReq(int floor, int plot, String regNo) throws JsonProcessingException {
         final CreateParkingRequestDTO requestDTO = CreateParkingRequestDTO.builder()
                 .parkingPlace(ParkingPlace.builder().floor(floor).plot(plot).build())
-                .spaceShip(SpaceShip.builder().name("RANDOM").registrationNumber("CSX 123").build())
+                .spaceShip(SpaceShip.builder().name("RANDOM").registrationNumber(regNo).build())
                 .spaceShipUser(SpaceShipUser.builder().user_id("my_own_id1").build())
                 .build();
 
