@@ -3,13 +3,13 @@ package com.twoday.spaceshipparking;
 import com.twoday.spaceshipparking.exceptions.ExistingRecordException;
 import com.twoday.spaceshipparking.exceptions.ParkingProhibitedException;
 import com.twoday.spaceshipparking.exceptions.ParkingNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class SpaceShipParkingGlobalExceptionHandler {

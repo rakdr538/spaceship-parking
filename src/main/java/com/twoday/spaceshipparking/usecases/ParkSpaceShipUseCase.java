@@ -5,11 +5,10 @@ import com.twoday.spaceshipparking.dto.CreateParkingRequestDTO;
 import com.twoday.spaceshipparking.dto.mappers.ParkingRequestToParkingMapper;
 import com.twoday.spaceshipparking.exceptions.ParkingProhibitedException;
 import com.twoday.spaceshipparking.service.ParkingService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-
-import javax.validation.Valid;
 
 @Validated
 @Component
