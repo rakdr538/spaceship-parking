@@ -171,7 +171,6 @@ class SpaceShipParkingControllerIT {
         @EmptySource
         @ValueSource(strings = "Some_random_id")
         void givenInvalidId_whenGetById_thenReturnBadReq(String Id) {
-            HttpEntity<String> entity = new HttpEntity<>(null, headers);
             ResponseEntity<Parking> getParked = restTemplate
                     .getForEntity(createURLWithPort() + "/" + Id, Parking.class);
             assertTrue(getParked.getStatusCode().is4xxClientError(), "Should be 400, bad req");
@@ -185,7 +184,6 @@ class SpaceShipParkingControllerIT {
         @EmptySource
         @ValueSource(strings = "some-random-id")
         void givenInvalidId_whenPerformUpdateById_thenReturnBadReq(String Id) {
-            HttpEntity<String> entity = new HttpEntity<>(null, headers);
             ResponseEntity<Parking> getParked = restTemplate
                     .getForEntity(createURLWithPort() + "/vacate/" + Id, Parking.class);
             assertTrue(getParked.getStatusCode().is4xxClientError(), "Should be 400, bad req");
