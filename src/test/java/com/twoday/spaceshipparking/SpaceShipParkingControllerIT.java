@@ -149,7 +149,7 @@ class SpaceShipParkingControllerIT {
         }
 
         @ParameterizedTest
-        @CsvSource({"-2,16", "4,14", "0,0"})
+        @CsvSource({"1,16", "4,14", "0,0"})
         void whenValidCreateReq_thenBadReqResponse(Integer floor, Integer plot) throws Exception {
             // boundary value testing
             HttpEntity<String> entity = new HttpEntity<>(getReq(floor, plot, "CSX 123"), headers);
