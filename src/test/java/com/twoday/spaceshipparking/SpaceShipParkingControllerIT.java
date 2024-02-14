@@ -10,7 +10,9 @@ import com.twoday.spaceshipparking.dto.CreateParkingRequestDTO;
 import com.twoday.spaceshipparking.service.ParkingService;
 import com.twoday.spaceshipparking.usecases.GetParkedSpaceShipUseCase;
 import com.twoday.spaceshipparking.usecases.ParkSpaceShipUseCase;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EmptySource;
@@ -35,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class SpaceShipParkingControllerIT {
 
     private static final String BASE_URL = "/api/v1/parkings";
@@ -73,10 +74,6 @@ class SpaceShipParkingControllerIT {
         headers.setContentType(MediaType.APPLICATION_JSON);
     }
 
-    private String createURLWithPort() {
-        return "http://localhost:" + port + BASE_URL;
-    }
-
     @Test
     void givenValidCreateReq_thenCreateNewParkingAndDoGetAndUpdateAfter2Mins() throws InterruptedException {
         final List<Parking> parkings = new ArrayList<>();
@@ -92,6 +89,7 @@ class SpaceShipParkingControllerIT {
         });
 
         // get
+        assertFalse(parkings.isEmpty());
         parkings.forEach(parking -> {
             var response = restTemplate
                     .getForEntity(createURLWithPort() + "/" + parking.getId(), Parking.class);
@@ -102,10 +100,7 @@ class SpaceShipParkingControllerIT {
 
         // update after 2mins
         TimeUnit.MINUTES.sleep(2);
-        if (parkings.isEmpty()) {
-            fail("Parkings cannot be empty");
-        }
-
+        assertFalse(parkings.isEmpty());
         ResponseEntity<Parking> getParked = restTemplate.getForEntity(
                 createURLWithPort() + "/vacate/" + parkings.getFirst().getId(), Parking.class);
         assertTrue(getParked.getStatusCode().is2xxSuccessful(), "Should be 200");
@@ -191,6 +186,10 @@ class SpaceShipParkingControllerIT {
             assertNotNull(getParked.getBody());
             assertNull(getParked.getBody().getId());
         }
+    }
+
+    private String createURLWithPort() {
+        return "http://localhost:" + port + BASE_URL;
     }
 
     private String getReq(int floor, int plot, String regNo) throws JsonProcessingException {
